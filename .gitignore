@@ -1,0 +1,16 @@
+# Local planning notes
+PLAN.md
+CLAUDE.md
+.claude/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# Generated data and dbt artifacts
+data/xml/
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
