@@ -3,12 +3,15 @@
 import pathlib
 import random
 import xml.etree.ElementTree as ET
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 
 from nfe_analytics.fiscal import calc_dv_chave, random_cnpj
 
 NS_NFE = "http://www.portalfiscal.inf.br/nfe"
 NS_PREFIX = "nfe"
+
+# Data fixa para tornar a saida reproduzivel (independente do relogio).
+DATA_REFERENCIA = date(2026, 9, 1)
 
 EMITENTES = [
     {"cnpj": "11444777000080", "xNome": "Metalurgica Sul Ltda", "UF": "RS", "cUF": "43", "aliq": 17.0},
@@ -56,7 +59,7 @@ def generate_nfe(rng: random.Random, numero: int, defect: str | None = None) -> 
     destinatario_uf = rng.choice(list(ALIQ_UF.keys()))
 
     tz_brt = timezone(timedelta(hours=-3))
-    hoje = datetime.now(tz_brt).date()
+    hoje = DATA_REFERENCIA
     dias_atras = rng.randint(0, 89)
     data_base = hoje - timedelta(days=dias_atras)
     hora = rng.randint(0, 23)

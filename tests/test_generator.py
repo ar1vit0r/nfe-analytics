@@ -3,6 +3,7 @@
 import hashlib
 import random
 import xml.etree.ElementTree as ET
+from datetime import date, datetime
 from pathlib import Path
 
 import pytest
@@ -174,3 +175,16 @@ class TestGenerateBatch:
         assert v_prod_item_ok == v_prod_item_def, "vProd do item nao deve mudar"
 
         assert abs(_vprod_total(root_def) - (_vprod_total(root_ok) + 10.0)) < 0.01, "vProd do total deve ter +10.00"
+
+    def test_dhemi_faixa_dates(self):
+        """dhEmi sempre entre 2026-06-04 e 2026-09-01 inclusive, para seeds 0-499."""
+        for seed in range(500):
+            xml_str = generate_nfe(random.Random(seed), 1)
+            root = _parse_xml(xml_str)
+            dh_emi_str = root.find(
+                f"{{{NS_NFE}}}NFe/{{{NS_NFE}}}infNFe/{{{NS_NFE}}}ide/{{{NS_NFE}}}dhEmi"
+            ).text
+            dt = datetime.fromisoformat(dh_emi_str)
+            assert date(2026, 6, 4) <= dt.date() <= date(2026, 9, 1), (
+                f"seed={seed} data={dt.date()} fora da faixa"
+            )
