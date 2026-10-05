@@ -1,0 +1,20 @@
+select
+    trim(chave) as chave,
+    n_item,
+    trim(chave) || '-' || n_item as item_key,
+    md5(c_prod || '|' || trim(ncm)) as product_key,
+    c_prod,
+    x_prod,
+    trim(ncm) as ncm,
+    trim(cfop) as cfop,
+    u_com,
+    q_com,
+    v_un_com,
+    v_prod,
+    trim(icms_cst) as icms_cst,
+    icms_v_bc,
+    icms_aliq,
+    icms_valor,
+    pis_valor,
+    cofins_valor
+from {{ source('raw', 'nfe_item') }}

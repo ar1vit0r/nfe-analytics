@@ -1,0 +1,13 @@
+# Copy to profiles.yml (or pass --profiles-dir). Defaults match docker-compose.yml.
+nfe_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('DBT_HOST', 'localhost') }}"
+      port: "{{ env_var('DBT_PORT', '5434') | as_number }}"
+      user: "{{ env_var('DBT_USER', 'nfe') }}"
+      password: "{{ env_var('DBT_PASSWORD', 'nfe') }}"
+      dbname: "{{ env_var('DBT_DBNAME', 'nfe') }}"
+      schema: analytics
+      threads: 4

@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: stg_nfe__documents
+    columns:
+      - name: chave
+        data_tests: [not_null, unique]
+  - name: stg_nfe__items
+    columns:
+      - name: item_key
+        data_tests: [not_null, unique]
+      - name: chave
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_nfe__documents')
+                field: chave
+      - name: icms_cst
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['00', '20', '40']
