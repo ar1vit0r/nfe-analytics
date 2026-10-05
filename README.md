@@ -1,6 +1,6 @@
 # nfe-analytics
 
-Synthetic NF-e (model 55) XML generator, parser, validator and PostgreSQL loader. The dbt marts are next.
+Synthetic NF-e (model 55) XML generator, parser, validator, PostgreSQL loader and dbt star-schema marts, with CI.
 
 Status: in progress. No real fiscal data is used. The generator emits a simplified subset of the NF-e 4.00 layout, not validated against the official XSD, with valid access-key check digits and CNPJs.
 
@@ -12,6 +12,8 @@ Status: in progress. No real fiscal data is used. The generator emits a simplifi
 - `fiscal.py`: access-key and CNPJ check digits
 - `load.py` and `schema.sql`: idempotent load into `raw.*` tables with a per-run audit batch; files that fail parsing, validation or column limits go to `raw.rejected_file` with the reason
 - `cli.py`: `generate` and `load` commands
+- `dbt/`: staging views, then `dim_emitente`, `dim_produto`, `dim_date`, `fct_nfe_item` and `mart_impostos_mensal` (ICMS, PIS, COFINS by month, issuer UF and CFOP), with key, relationship and accepted-value tests plus a fact-to-raw total reconciliation
+- `.github/workflows/ci.yml`: Postgres service, `pytest`, load of 200 synthetic notes, `dbt build`
 
 ## Known simplifications
 
@@ -29,6 +31,16 @@ python3 -m nfe_analytics.cli load data/xml
 
 The database URL comes from `--database-url` or `DATABASE_URL`, defaulting to the compose service on port 5434.
 
+Then build the marts (needs the optional `dbt` extra, ideally in its own virtualenv):
+
+```
+pip install -e '.[dbt]'
+mkdir -p ~/.dbt && cp dbt/profiles.yml.example ~/.dbt/profiles.yml
+dbt build --project-dir dbt
+```
+
+Models land in the `analytics_staging` and `analytics_marts` schemas. The emission date is taken in `America/Sao_Paulo` time, not the database session's.
+
 ## Run the tests
 
 ```
@@ -43,4 +55,4 @@ TEST_DATABASE_URL=postgresql://nfe:nfe@localhost:5434/nfe python3 -m pytest -q t
 
 ## Planned
 
-dbt staging and marts (star schema, monthly tax report), dbt tests and CI.
+A pipeline diagram, and optional IBS/CBS (tax reform) fields once the current layout note is checked.
