@@ -1,0 +1,40 @@
+version: 2
+
+models:
+  - name: dim_emitente
+    columns:
+      - name: emit_cnpj
+        data_tests: [not_null, unique]
+  - name: dim_produto
+    columns:
+      - name: product_key
+        data_tests: [not_null, unique]
+  - name: dim_date
+    columns:
+      - name: date_key
+        data_tests: [not_null, unique]
+  - name: fct_nfe_item
+    columns:
+      - name: item_key
+        data_tests: [not_null, unique]
+      - name: emit_cnpj
+        data_tests:
+          - relationships:
+              arguments: {to: ref('dim_emitente'), field: emit_cnpj}
+      - name: product_key
+        data_tests:
+          - relationships:
+              arguments: {to: ref('dim_produto'), field: product_key}
+      - name: date_key
+        data_tests:
+          - relationships:
+              arguments: {to: ref('dim_date'), field: date_key}
+      - name: icms_cst
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['00', '20', '40']
+  - name: mart_impostos_mensal
+    columns:
+      - name: month_start
+        data_tests: [not_null]
